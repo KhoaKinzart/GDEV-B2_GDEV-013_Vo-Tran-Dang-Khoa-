@@ -18,6 +18,7 @@ public class SurvivalGamePrototype : MonoBehaviour
 
     [Header("Enemy Spawning")]
     [SerializeField] private float enemySpeed = 2.6f;
+    [SerializeField] private float enemyDetectionRadius = 3.5f;
     [SerializeField] private float spawnInterval = 0.85f;
     [SerializeField] private int maxEnemies = 45;
 
@@ -215,7 +216,7 @@ public class SurvivalGamePrototype : MonoBehaviour
             enemy = enemyObject.AddComponent<Enemy>();
         }
 
-        enemy.Initialize(this, player.transform, enemySpeed, 1);
+        enemy.Initialize(this, player.transform, enemySpeed, 1, enemyDetectionRadius, mapHalfSize);
     }
 
     private GameObject CreateDefaultPlayerObject()
@@ -228,7 +229,7 @@ public class SurvivalGamePrototype : MonoBehaviour
     private void ConfigurePlayerObject(GameObject playerObject)
     {
         SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(playerObject);
-        renderer.sprite = SpriteFactory.CreateTriangleSprite(48, new Color(0.2f, 0.75f, 1f));
+        renderer.sprite = SpriteFactory.CreateCircleSprite(48, new Color(0.2f, 0.75f, 1f));
         renderer.sortingOrder = 3;
 
         CircleCollider2D collider = GetOrAddComponent<CircleCollider2D>(playerObject);
@@ -252,7 +253,7 @@ public class SurvivalGamePrototype : MonoBehaviour
     private void ConfigureEnemyObject(GameObject enemyObject)
     {
         SpriteRenderer renderer = GetOrAddComponent<SpriteRenderer>(enemyObject);
-        renderer.sprite = SpriteFactory.CreateBoxSprite(34, 34, new Color(1f, 0.3f, 0.24f));
+        renderer.sprite = SpriteFactory.CreateCircleSprite(42, new Color(1f, 0.2f, 0.16f));
         renderer.sortingOrder = 2;
 
         CircleCollider2D collider = GetOrAddComponent<CircleCollider2D>(enemyObject);

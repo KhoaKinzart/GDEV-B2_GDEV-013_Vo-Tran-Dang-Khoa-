@@ -34,6 +34,32 @@ public static class PrototypeInput
 #endif
     }
 
+    public static bool FireHeld()
+    {
+#if ENABLE_INPUT_SYSTEM
+        return Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+#else
+        return Input.GetKey(KeyCode.Space);
+#endif
+    }
+
+    public static bool PointerPosition(out Vector2 pointerPosition)
+    {
+#if ENABLE_INPUT_SYSTEM
+        if (Mouse.current != null)
+        {
+            pointerPosition = Mouse.current.position.ReadValue();
+            return true;
+        }
+#else
+        pointerPosition = Input.mousePosition;
+        return true;
+#endif
+
+        pointerPosition = Vector2.zero;
+        return false;
+    }
+
     public static bool RestartPressed()
     {
 #if ENABLE_INPUT_SYSTEM

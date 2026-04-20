@@ -377,8 +377,9 @@ MonoBehaviour:
   playerSpeed: 6
   fireCooldown: 0.35
   enemySpeed: 2.6
-  spawnInterval: 0.85
-  maxEnemies: 45
+  enemyDetectionRadius: 3.5
+  spawnInterval: 3
+  maxEnemies: 10
   bulletSpeed: 12
   bulletLifetime: 2
   bulletDamage: 1
