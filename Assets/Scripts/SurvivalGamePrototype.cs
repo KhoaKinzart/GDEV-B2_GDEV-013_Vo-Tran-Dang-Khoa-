@@ -27,7 +27,10 @@ public class SurvivalGamePrototype : MonoBehaviour
 
     [Header("Bullet")]
     [SerializeField] private float bulletSpeed = 12f;
-    [SerializeField] private float bulletLifetime = 2f;
+    [Tooltip("How long a bullet stays alive, including after bouncing.")]
+    public float bulletLifetime = 3.5f;
+    [Tooltip("How many times a bullet can bounce off the square map boundary before being destroyed.")]
+    public int bulletMaxBounces = 2;
     [SerializeField] private int bulletDamage = 1;
 
     private PlayerMover player;
@@ -43,6 +46,7 @@ public class SurvivalGamePrototype : MonoBehaviour
     public float FireCooldown => fireCooldown;
     public float BulletSpeed => bulletSpeed;
     public float BulletLifetime => bulletLifetime;
+    public int BulletMaxBounces => bulletMaxBounces;
     public int BulletDamage => bulletDamage;
     public bool IsGameOver => gameOver;
 
@@ -55,6 +59,8 @@ public class SurvivalGamePrototype : MonoBehaviour
         minSpawnDistanceFromPlayer = Mathf.Max(0f, minSpawnDistanceFromPlayer);
         spawnRampPower = Mathf.Max(0.1f, spawnRampPower);
         maxEnemies = Mathf.Max(1, maxEnemies);
+        bulletLifetime = Mathf.Max(0.1f, bulletLifetime);
+        bulletMaxBounces = Mathf.Max(0, bulletMaxBounces);
     }
 
     private void Awake()

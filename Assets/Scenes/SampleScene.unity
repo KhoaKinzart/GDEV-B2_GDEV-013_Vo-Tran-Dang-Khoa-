@@ -384,7 +384,8 @@ MonoBehaviour:
   spawnRampPower: 1.25
   maxEnemies: 4
   bulletSpeed: 12
-  bulletLifetime: 3
+  bulletLifetime: 3.5
+  bulletMaxBounces: 3
   bulletDamage: 1
 --- !u!4 &958752087
 Transform:
