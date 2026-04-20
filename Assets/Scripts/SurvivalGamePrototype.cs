@@ -19,7 +19,10 @@ public class SurvivalGamePrototype : MonoBehaviour
     [Header("Enemy Spawning")]
     [SerializeField] private float enemySpeed = 2.6f;
     [SerializeField] private float enemyDetectionRadius = 3.5f;
-    [SerializeField] private float spawnInterval = 0.85f;
+    [SerializeField] private float spawnInterval = 1.6f;
+    [SerializeField] private float minimumSpawnInterval = 0.45f;
+    [SerializeField] private float minSpawnDistanceFromPlayer = 5f;
+    [SerializeField] private float spawnRampPower = 1.25f;
     [SerializeField] private int maxEnemies = 45;
 
     [Header("Bullet")]
@@ -42,6 +45,17 @@ public class SurvivalGamePrototype : MonoBehaviour
     public float BulletLifetime => bulletLifetime;
     public int BulletDamage => bulletDamage;
     public bool IsGameOver => gameOver;
+
+    private void OnValidate()
+    {
+        survivalDuration = Mathf.Max(1f, survivalDuration);
+        mapHalfSize = Mathf.Max(3f, mapHalfSize);
+        spawnInterval = Mathf.Max(0.05f, spawnInterval);
+        minimumSpawnInterval = Mathf.Clamp(minimumSpawnInterval, 0.05f, spawnInterval);
+        minSpawnDistanceFromPlayer = Mathf.Max(0f, minSpawnDistanceFromPlayer);
+        spawnRampPower = Mathf.Max(0.1f, spawnRampPower);
+        maxEnemies = Mathf.Max(1, maxEnemies);
+    }
 
     private void Awake()
     {
@@ -73,7 +87,7 @@ public class SurvivalGamePrototype : MonoBehaviour
         spawnTimer -= Time.deltaTime;
         if (spawnTimer <= 0f)
         {
-            spawnTimer = spawnInterval;
+            spawnTimer = GetCurrentSpawnInterval();
             SpawnEnemy();
         }
 
@@ -273,7 +287,42 @@ public class SurvivalGamePrototype : MonoBehaviour
         return component != null ? component : target.AddComponent<T>();
     }
 
+    private float GetCurrentSpawnInterval()
+    {
+        float safeMinimum = Mathf.Max(0.05f, minimumSpawnInterval);
+        float startInterval = Mathf.Max(spawnInterval, safeMinimum);
+        float elapsedProgress = survivalDuration <= 0f ? 1f : 1f - remainingTime / survivalDuration;
+        float ramp = Mathf.Pow(Mathf.Clamp01(elapsedProgress), Mathf.Max(0.1f, spawnRampPower));
+        return Mathf.Lerp(startInterval, safeMinimum, ramp);
+    }
+
     private Vector2 GetEdgeSpawnPosition()
+    {
+        Vector2 playerPosition = player != null ? (Vector2)player.transform.position : Vector2.zero;
+        Vector2 bestPosition = Vector2.zero;
+        float bestDistanceSqr = -1f;
+        float minimumDistanceSqr = minSpawnDistanceFromPlayer * minSpawnDistanceFromPlayer;
+
+        for (int i = 0; i < 24; i++)
+        {
+            Vector2 candidate = GetRandomEdgePosition();
+            float distanceSqr = (candidate - playerPosition).sqrMagnitude;
+            if (distanceSqr >= minimumDistanceSqr)
+            {
+                return candidate;
+            }
+
+            if (distanceSqr > bestDistanceSqr)
+            {
+                bestDistanceSqr = distanceSqr;
+                bestPosition = candidate;
+            }
+        }
+
+        return bestPosition;
+    }
+
+    private Vector2 GetRandomEdgePosition()
     {
         float edge = Random.Range(0, 4);
         float paddedEdge = mapHalfSize - 0.7f;
@@ -300,7 +349,7 @@ public class SurvivalGamePrototype : MonoBehaviour
     private void EndGame(bool survived)
     {
         gameOver = true;
-        messageText.text = survived ? "YOU SURVIVED\nPress R to restart" : "YOU WERE OVERRUN\nPress R to restart";
+        messageText.text = survived ? "YOU WIN\nPress R to restart" : "YOU LOSE\nPress R to restart";
         messageText.color = survived ? new Color(0.65f, 1f, 0.55f) : new Color(1f, 0.35f, 0.3f);
     }
 
@@ -337,6 +386,7 @@ public class SurvivalGamePrototype : MonoBehaviour
         hudText.text = "Survive: " + Mathf.CeilToInt(remainingTime) + "s"
             + "\nHealth: " + playerHealth
             + "\nKills: " + kills
+            + "\nSpawn interval: " + GetCurrentSpawnInterval().ToString("0.00") + "s"
             + "\nFire cooldown: " + player.CooldownRemaining.ToString("0.00") + "s"
             + "\nLeft click: move | Space: fire | R: restart";
     }

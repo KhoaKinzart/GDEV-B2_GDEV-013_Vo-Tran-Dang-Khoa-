@@ -371,17 +371,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SurvivalGamePrototype
   playerPrefab: {fileID: 3330558512791476736, guid: b69fadf9343d08543a491776aa0614d3, type: 3}
   enemyPrefab: {fileID: 6398584111420081189, guid: 316764a4e4bbef04aa23a3b87e6e5a7b, type: 3}
-  survivalDuration: 60
+  survivalDuration: 10
   mapHalfSize: 10
   startingPlayerHealth: 3
   playerSpeed: 6
   fireCooldown: 0.35
   enemySpeed: 2.6
   enemyDetectionRadius: 3.5
-  spawnInterval: 3
-  maxEnemies: 10
+  spawnInterval: 1.6
+  minimumSpawnInterval: 0.45
+  minSpawnDistanceFromPlayer: 5.5
+  spawnRampPower: 1.25
+  maxEnemies: 40
   bulletSpeed: 12
-  bulletLifetime: 2
+  bulletLifetime: 3
   bulletDamage: 1
 --- !u!4 &958752087
 Transform:
